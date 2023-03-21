@@ -39,8 +39,8 @@ def scattering2d(x, pad, unpad, backend, J, L, phi, psi, max_order,
 
         #JEC
         U_1_c_sav = U_1_c.copy()
-        U_1_c_sav= subsample_fourier(U_1_c_sav, k=2 ** (J - j1))
-        U_1_c_sav = unpad(U_1_c_sav)
+        #U_1_c_sav= subsample_fourier(U_1_c_sav, k=2 ** (J - j1))
+        #U_1_c_sav = unpad(U_1_c_sav)
         print("U_1_c_sav:",U_1_c_sav)
         out_S_1_JEC.append({'coef_jec':U_1_c_sav,
                             'j': (j1,),
