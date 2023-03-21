@@ -9,7 +9,7 @@ def scattering2d(x, pad, unpad, backend, J, L, phi, psi, max_order,
     stack = backend.stack
 
     # Define lists for output.
-    out_S_0, out_S_1, out_S_2 = [], [], []
+    out_S_0, out_S_1, out_S_1_JEC, out_S_2 = [], [], [], []
 
     U_r = pad(x)
 
@@ -18,6 +18,7 @@ def scattering2d(x, pad, unpad, backend, J, L, phi, psi, max_order,
     # First low pass filter
     U_1_c = cdgmm(U_0_c, phi['levels'][0])
     U_1_c = subsample_fourier(U_1_c, k=2 ** J)
+
 
     S_0 = irfft(U_1_c)
     S_0 = unpad(S_0)
@@ -35,6 +36,17 @@ def scattering2d(x, pad, unpad, backend, J, L, phi, psi, max_order,
         if j1 > 0:
             U_1_c = subsample_fourier(U_1_c, k=2 ** j1)
         U_1_c = ifft(U_1_c)
+
+        #JEC
+        U_1_c_sav = U_1_c.copy()
+        U_1_c_sav = rfft(U_1_c_sav)
+        out_S_1_JEC.append({'coef':U_1_c_sav,
+                            'j': (j1,),
+                            'n': (n1,),
+                            'theta': (theta1,)
+                            })
+
+
         U_1_c = modulus(U_1_c)
         U_1_c = rfft(U_1_c)
 
@@ -81,6 +93,7 @@ def scattering2d(x, pad, unpad, backend, J, L, phi, psi, max_order,
     out_S.extend(out_S_0)
     out_S.extend(out_S_1)
     out_S.extend(out_S_2)
+    out_S.extend(out_S_1_JEC) # JEC
 
     if out_type == 'array':
         out_S = stack([x['coef'] for x in out_S])
