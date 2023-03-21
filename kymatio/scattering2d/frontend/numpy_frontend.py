@@ -50,10 +50,7 @@ class ScatteringNumPy2D(ScatteringNumPy, ScatteringBase2D):
                 try:
                     x['coef'] = x['coef'].reshape(new_shape)
                 except KeyError:
-                    try:
-                        x['coef_jec'] = x['coef_jec'].reshape(new_shape)
-                    except KeyError:
-                        pass
+                    pass
 
         return S
 
