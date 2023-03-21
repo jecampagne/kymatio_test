@@ -39,7 +39,6 @@ def scattering2d(x, pad, unpad, backend, J, L, phi, psi, max_order,
 
         #JEC
         U_1_c_sav = U_1_c.copy()
-        U_1_c_sav = rfft(U_1_c_sav)
         out_S_1_JEC.append({'coef':U_1_c_sav,
                             'j': (j1,),
                             'n': (n1,),
