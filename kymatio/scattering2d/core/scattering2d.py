@@ -1,3 +1,5 @@
+import copy #JEC
+
 def scattering2d(x, pad, unpad, backend, J, L, phi, psi, max_order,
         out_type='array'):
     subsample_fourier = backend.subsample_fourier
@@ -37,9 +39,12 @@ def scattering2d(x, pad, unpad, backend, J, L, phi, psi, max_order,
             U_1_c = subsample_fourier(U_1_c, k=2 ** j1)
         U_1_c = ifft(U_1_c)
 
+        print(f"JEC 1: n1:{n1},j1:{j1},t:{theta1}: U1c", U_1_c.shape)
+
         #JEC
-        U_1_c_sav = U_1_c.copy()
+        U_1_c_sav = copy.deepcopy(U_1_c)
         U_1_c_sav= subsample_fourier(U_1_c_sav, k=2 ** (J - j1))
+        print(f"JEC 1b: n1:{n1},j1:{j1},t:{theta1}: U1csav", U_1_c_sav.shape)
         #U_1_c_sav = unpad(U_1_c_sav)
         out_S_1_JEC.append({'coef_jec':U_1_c_sav,
                             'j': (j1,),
@@ -47,16 +52,23 @@ def scattering2d(x, pad, unpad, backend, J, L, phi, psi, max_order,
                             'theta': (theta1,)
                             })
 
-
         U_1_c = modulus(U_1_c)
+        print(f"JEC 2: n1:{n1},j1:{j1},t:{theta1}: U1c", U_1_c.shape)
         U_1_c = rfft(U_1_c)
+        print(f"JEC 3: n1:{n1},j1:{j1},t:{theta1}: U1c", U_1_c.shape)
 
         # Second low pass filter
         S_1_c = cdgmm(U_1_c, phi['levels'][j1])
+        print(f"JEC 4: n1:{n1},j1:{j1},t:{theta1}: S1c", S_1_c.shape)
+
         S_1_c = subsample_fourier(S_1_c, k=2 ** (J - j1))
+        print(f"JEC 5: n1:{n1},j1:{j1},t:{theta1}: S1c", S_1_c.shape)
 
         S_1_r = irfft(S_1_c)
+        print(f"JEC 6: n1:{n1},j1:{j1},t:{theta1}: S1r", S_1_r.shape)
+
         S_1_r = unpad(S_1_r)
+        print(f"JEC 7: n1:{n1},j1:{j1},t:{theta1}: S1r", S_1_r.shape)
 
         out_S_1.append({'coef': S_1_r,
                         'j': (j1,),
