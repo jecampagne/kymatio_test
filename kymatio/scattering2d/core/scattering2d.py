@@ -15,7 +15,7 @@ def scattering2d(x, pad, unpad, backend, J, L, phi, psi, max_order,
 
     U_r = pad(x)
 
-    U_0_c = rfft(U_r)
+    U_0_c = rfft(U_r)      # Fourier domain
 
     # First low pass filter
     U_1_c = cdgmm(U_0_c, phi['levels'][0])
@@ -34,16 +34,20 @@ def scattering2d(x, pad, unpad, backend, J, L, phi, psi, max_order,
         j1 = psi[n1]['j']
         theta1 = psi[n1]['theta']
 
-        U_1_c = cdgmm(U_0_c, psi[n1]['levels'][0])
-        if j1 > 0:
-            U_1_c = subsample_fourier(U_1_c, k=2 ** j1)
-        U_1_c = ifft(U_1_c)
-
-        print(f"JEC 1: n1:{n1},j1:{j1},t:{theta1}: U1c", U_1_c.shape)
+        U_1_c = cdgmm(U_0_c, psi[n1]['levels'][0])   # Fourier domain
 
         #JEC
         U_1_c_sav = copy.deepcopy(U_1_c)
-        #U_1_c_sav= subsample_fourier(U_1_c_sav, k=2 ** (J - j1))
+
+        if j1 > 0:
+            U_1_c = subsample_fourier(U_1_c, k=2 ** j1)
+        U_1_c = ifft(U_1_c)   # Real domain
+
+        print(f"JEC 1: n1:{n1},j1:{j1},t:{theta1}: U1c", U_1_c.shape)
+
+
+        U_1_c_sav= subsample_fourier(U_1_c_sav, k=2 ** (J - j1))
+        U_1_c_sav = ifft(U_1_c_sav)
         print(f"JEC 1b: n1:{n1},j1:{j1},t:{theta1}: U1csav", U_1_c_sav.shape)
         #U_1_c_sav = unpad(U_1_c_sav)
         out_S_1_JEC.append({'coef_jec':U_1_c_sav,
@@ -54,7 +58,7 @@ def scattering2d(x, pad, unpad, backend, J, L, phi, psi, max_order,
 
         U_1_c = modulus(U_1_c)
         print(f"JEC 2: n1:{n1},j1:{j1},t:{theta1}: U1c", U_1_c.shape)
-        U_1_c = rfft(U_1_c)
+        U_1_c = rfft(U_1_c)    # Fourier domain
         print(f"JEC 3: n1:{n1},j1:{j1},t:{theta1}: U1c", U_1_c.shape)
 
         # Second low pass filter
@@ -64,7 +68,7 @@ def scattering2d(x, pad, unpad, backend, J, L, phi, psi, max_order,
         S_1_c = subsample_fourier(S_1_c, k=2 ** (J - j1))
         print(f"JEC 5: n1:{n1},j1:{j1},t:{theta1}: S1c", S_1_c.shape)
 
-        S_1_r = irfft(S_1_c)
+        S_1_r = irfft(S_1_c)  # Real domain
         print(f"JEC 6: n1:{n1},j1:{j1},t:{theta1}: S1r", S_1_r.shape)
 
         S_1_r = unpad(S_1_r)
