@@ -36,11 +36,13 @@ def scattering2d(x, pad, unpad, backend, J, L, phi, psi, max_order,
 
         U_1_c = cdgmm(U_0_c, psi[n1]['levels'][0])   # Fourier domain
 
-        #JEC
-        U_1_c_sav = copy.deepcopy(U_1_c)
 
         if j1 > 0:
             U_1_c = subsample_fourier(U_1_c, k=2 ** j1)
+
+        #JEC
+        U_1_c_sav = copy.deepcopy(U_1_c)
+
         U_1_c = ifft(U_1_c)   # Real domain
 
         print(f"JEC 1: n1:{n1},j1:{j1},t:{theta1}: U1c", U_1_c.shape)
